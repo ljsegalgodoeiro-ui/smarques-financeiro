@@ -1,0 +1,47 @@
+{
+  "receitas": [
+    {
+      "id": 1704067200000,
+      "descricao": "Salário",
+      "valor": 5000,
+      "categoria": "salario",
+      "dataPrevisao": "2025-01-01",
+      "dataRecebimento": "",
+      "recebido": false,
+      "mes": 0,
+      "ano": 2025,
+      "timestamp": "2025-01-01T12:00:00.000Z"
+    }
+  ],
+  "despesas": [
+    {
+      "id": 1704067200001,
+      "descricao": "Mercado",
+      "valor": 250,
+      "categoria": "alimentacao",
+      "dataVencimento": "2025-01-01",
+      "dataPagamento": "",
+      "pago": false,
+      "mes": 0,
+      "ano": 2025,
+      "timestamp": "2025-01-01T12:00:00.000Z"
+    }
+  ],
+  "orcamentos": {
+    "2025-0": {
+      "alimentacao": 800,
+      "transporte": 400,
+      "lazer": 300,
+      "saude": 200,
+      "casa": 600,
+      "educacao": 300,
+      "roupas": 200,
+      "outros": 200
+    }
+  },
+  "saldosAnteriores": {
+    "2024-11": 1000
+  },
+  "gastosRapidos": [],
+  "lastUpdate": "2025-01-01T12:00:00.000Z"
+}
