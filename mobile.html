@@ -2,960 +2,140 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💰 SMarques - Gastos</title>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="SMarques Gastos">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%234CAF50'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white'>💰</text></svg>">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>💰 Gasto Rápido</title>
+    <script src="Jssync.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+        :root {
+            --primary-color: #4CAF50;
+            --background-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --border-radius: 12px;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 0;
-            user-select: none;
-            -webkit-user-select: none;
-            overflow-x: hidden;
-        }
-
-        .mobile-container {
-            max-width: 100%;
-            min-height: 100vh;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            color: var(--text-color);
         }
 
-        .header {
-            background: linear-gradient(135deg, #2c3e50, #4a6741);
-            color: white;
-            padding: 60px 20px 30px;
-            text-align: center;
-            position: relative;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .header h1 {
-            font-size: 1.8em;
-            margin-bottom: 5px;
-            font-weight: 700;
-        }
-
-        .header p {
-            font-size: 0.9em;
-            opacity: 0.9;
-        }
-
-        .planilha-link {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            padding: 8px 16px;
-            border-radius: 20px;
-            color: white;
-            text-decoration: none;
-            font-size: 0.9em;
-            font-weight: 600;
-            transition: background 0.3s ease;
-        }
-
-        .planilha-link:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .sync-status {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            background: rgba(39, 174, 96, 0.9);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            backdrop-filter: blur(10px);
-            animation: fadeIn 0.3s ease;
-        }
-
-        .sync-status.syncing {
-            background: rgba(52, 152, 219, 0.9);
-            animation: pulse 1s ease infinite;
-        }
-
-        .sync-status.offline {
-            background: rgba(243, 156, 18, 0.9);
-        }
-
-        .sync-status.error {
-            background: rgba(231, 76, 60, 0.9);
-        }
-
-        .quick-stats {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            padding: 0 10px;
-        }
-
-        .stat-item {
-            text-align: center;
-            flex: 1;
-            padding: 0 5px;
-        }
-
-        .stat-value {
-            font-size: 1.1em;
-            font-weight: bold;
-            margin-bottom: 2px;
-        }
-
-        .stat-label {
-            font-size: 0.7em;
-            opacity: 0.8;
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-container {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .form-title {
-            color: #2c3e50;
-            font-size: 1.4em;
-            font-weight: 700;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 8px;
-            font-size: 0.9em;
-        }
-
-        .form-group input, .form-group select {
+        .container {
             width: 100%;
-            padding: 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            font-size: 16px;
-            background: #f8f9fa;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .category-btn {
-            padding: 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            background: #f8f9fa;
+            max-width: 400px;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
             text-align: center;
-            font-size: 0.9em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: #2c3e50;
         }
 
-        .category-btn.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-            transform: scale(1.02);
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
         }
 
-        .category-btn:active {
-            transform: scale(0.98);
-        }
-
-        .amount-input {
-            position: relative;
-        }
-
-        .currency-symbol {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-weight: bold;
-            color: #2c3e50;
-            font-size: 16px;
-            z-index: 1;
-        }
-
-        .amount-input input {
-            padding-left: 45px !important;
-            font-size: 18px;
-            font-weight: 600;
+        .input-group {
+            margin-bottom: 1.5rem;
             text-align: left;
         }
 
-        .submit-btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            font-size: 1.2em;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3);
-        }
-
-        .submit-btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 3px 10px rgba(39, 174, 96, 0.3);
-        }
-
-        .submit-btn:disabled {
-            background: #bdc3c7;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .recent-transactions {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-
-        .transactions-title {
-            color: #2c3e50;
-            font-size: 1.1em;
-            font-weight: 700;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .transaction-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .transaction-item:last-child {
-            border-bottom: none;
-        }
-
-        .transaction-info {
-            flex: 1;
-        }
-
-        .transaction-desc {
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 0.9em;
-        }
-
-        .transaction-cat {
-            font-size: 0.75em;
-            color: #7f8c8d;
-            margin-top: 2px;
-        }
-
-        .transaction-value {
+        label {
+            display: block;
             font-weight: bold;
-            color: #e74c3c;
-            font-size: 0.9em;
+            margin-bottom: 0.5rem;
         }
 
-        .transaction-time {
-            font-size: 0.7em;
-            color: #95a5a6;
-        }
-
-        .success-message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #27ae60;
-            color: white;
-            padding: 20px 30px;
-            border-radius: 15px;
-            font-weight: 600;
-            z-index: 1000;
-            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.3);
-            display: none;
-            text-align: center;
-        }
-
-        .clear-btn {
+        input, select {
             width: 100%;
-            padding: 12px;
-            background: transparent;
-            color: #e74c3c;
-            border: 2px solid #e74c3c;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: all 0.3s ease;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
         }
 
-        .clear-btn:active {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .settings-section {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-
-        .settings-title {
-            color: #2c3e50;
-            font-size: 1.1em;
-            font-weight: 700;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .settings-input {
+        button {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .settings-btn {
-            width: 100%;
-            padding: 12px;
-            background: #667eea;
+            padding: 1rem;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 10px;
-            font-weight: 600;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
             cursor: pointer;
-            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
         }
 
-        .sync-notification {
-            position: fixed;
-            bottom: 100px;
-            left: 20px;
-            right: 20px;
-            background: rgba(39, 174, 96, 0.95);
-            color: white;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: 600;
-            z-index: 1000;
-            transform: translateY(100px);
-            transition: transform 0.3s ease;
-        }
-
-        .sync-notification.show {
-            transform: translateY(0);
-        }
-
-        @media (max-height: 700px) {
-            .header {
-                padding: 40px 20px 20px;
-            }
-            
-            .main-content {
-                padding: 20px;
-            }
-            
-            .form-container {
-                padding: 20px;
-            }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .form-container, .recent-transactions {
-            animation: slideUp 0.5s ease;
+        button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <div class="mobile-container">
-        <div class="sync-status" id="syncStatus">🔄 Inicializando...</div>
-        
-        <div class="header">
-            <a href="index.html" class="planilha-link">📊 Planilha</a>
-            <h1>💰 Família SMarques</h1>
-            <p>Lançamento Rápido de Gastos</p>
-            
-            <div class="quick-stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="gastosHoje">R$ 0</div>
-                    <div class="stat-label">Hoje</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="gastosMes">R$ 0</div>
-                    <div class="stat-label">Este Mês</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="totalGastos">0</div>
-                    <div class="stat-label">Lançamentos</div>
-                </div>
-            </div>
+    <div class="container">
+        <h1>Gasto Rápido</h1>
+        <div class="input-group">
+            <label for="descricao">Descrição</label>
+            <input type="text" id="descricao" placeholder="Ex: Café, almoço...">
         </div>
-
-        <div class="main-content">
-            <div class="form-container">
-                <div class="form-title">🚀 Novo Gasto</div>
-                
-                <form id="gastoForm">
-                    <div class="form-group">
-                        <label>💬 O que foi?</label>
-                        <input type="text" id="descricao" placeholder="Ex: Almoço, Gasolina, Café..." autocomplete="off" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>💵 Quanto custou?</label>
-                        <div class="amount-input">
-                            <span class="currency-symbol">R$</span>
-                            <input type="number" id="valor" step="0.01" placeholder="0,00" inputmode="decimal" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>📂 Categoria</label>
-                        <div class="category-grid" id="categorias">
-                            <div class="category-btn" data-category="alimentacao">🍽️ Alimentação</div>
-                            <div class="category-btn" data-category="transporte">🚗 Transporte</div>
-                            <div class="category-btn" data-category="saude">🏥 Saúde</div>
-                            <div class="category-btn" data-category="lazer">🎮 Lazer</div>
-                            <div class="category-btn" data-category="casa">🏠 Casa</div>
-                            <div class="category-btn" data-category="outros">📦 Outros</div>
-                        </div>
-                        <input type="hidden" id="categoria" required>
-                    </div>
-
-                    <button type="submit" class="submit-btn" id="submitBtn">
-                        ✅ Lançar Gasto
-                    </button>
-                    
-                    <button type="button" class="clear-btn" onclick="limparFormulario()">
-                        🗑️ Limpar Campos
-                    </button>
-                </form>
-            </div>
-
-            <div class="recent-transactions">
-                <div class="transactions-title">📋 Últimos Lançamentos</div>
-                <div id="listaTransacoes">
-                    <div style="text-align: center; color: #95a5a6; padding: 20px;">
-                        Nenhum lançamento ainda.<br>
-                        Faça seu primeiro gasto! 🚀
-                    </div>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <div class="settings-title">⚙️ Configurações</div>
-                <input type="text" id="githubUser" class="settings-input" placeholder="Usuário GitHub" value="">
-                <input type="text" id="githubRepo" class="settings-input" placeholder="Nome do Repositório" value="smarques-financeiro">
-                <button class="settings-btn" onclick="salvarConfiguracoes()">💾 Salvar Configurações</button>
-                <button class="settings-btn" onclick="sincronizarManual()">🔄 Sincronizar Agora</button>
-            </div>
+        <div class="input-group">
+            <label for="valor">Valor</label>
+            <input type="number" id="valor" placeholder="15.50">
         </div>
+        <div class="input-group">
+            <label for="categoria">Categoria</label>
+            <select id="categoria">
+                <option value="alimentacao">Alimentação</option>
+                <option value="transporte">Transporte</option>
+                <option value="saude">Saúde</option>
+                <option value="lazer">Lazer</option>
+                <option value="casa">Casa</option>
+                <option value="outros">Outros</option>
+            </select>
+        </div>
+        <button onclick="salvarGasto()">Lançar Gasto</button>
     </div>
-
-    <div class="success-message" id="successMessage">
-        ✅ Gasto lançado com sucesso!
-    </div>
-
-    <div class="sync-notification" id="syncNotification">
-        🔄 Sincronizado com a planilha principal!
-    </div>
-
-    <!-- Script da Sincronização -->
-    <script src="js/sync.js"></script>
 
     <script>
-        // Dados locais com sincronização automática
-        let categoriaSeleccionada = '';
-        let syncManager = null;
-
-        // Inicializar app com sincronização
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Inicializar sincronização
-            await inicializarSincronizacao();
-            
-            // Configurar categorias
-            configurarCategorias();
-            
-            // Carregar configurações salvas
-            carregarConfiguracoes();
-            
-            // Atualizar interface
-            atualizarEstatisticas();
-            atualizarListaTransacoes();
-            
-            // Auto-focus no primeiro campo
-            document.getElementById('descricao').focus();
-        });
-
-        // Inicializar sistema de sincronização
-        async function inicializarSincronizacao() {
-            const githubUser = localStorage.getItem('githubUser') || 'seu-usuario';
-            const githubRepo = localStorage.getItem('githubRepo') || 'smarques-financeiro';
-            
-            // Inicializar o sync manager
-            syncManager = initSMarquesSync({
-                owner: githubUser,
-                repo: githubRepo
-            });
-            
-            // Configurar callbacks de status
-            syncManager.onStatusChange((status, message) => {
-                const statusElement = document.getElementById('syncStatus');
-                
-                statusElement.className = `sync-status ${status}`;
-                statusElement.textContent = getStatusMessage(status);
-            });
-            
-            // Iniciar sincronização automática
-            syncManager.iniciarSincronizacaoAutomatica(30000); // 30 segundos
-            
-            // Carregar dados iniciais
-            await syncManager.carregarDados();
-        }
-
-        function getStatusMessage(status) {
-            const messages = {
-                'connected': '✅ Conectado',
-                'syncing': '🔄 Sincronizando...',
-                'offline': '📱 Offline',
-                'error': '⚠️ Erro'
-            };
-            return messages[status] || '❓ Desconhecido';
-        }
-
-        // Carregar configurações
-        function carregarConfiguracoes() {
-            document.getElementById('githubUser').value = localStorage.getItem('githubUser') || '';
-            document.getElementById('githubRepo').value = localStorage.getItem('githubRepo') || 'smarques-financeiro';
-        }
-
-        // Salvar configurações
-        async function salvarConfiguracoes() {
-            const githubUser = document.getElementById('githubUser').value.trim();
-            const githubRepo = document.getElementById('githubRepo').value.trim();
-            
-            if (!githubUser) {
-                mostrarErro('Por favor, informe o usuário do GitHub!');
-                return;
-            }
-            
-            localStorage.setItem('githubUser', githubUser);
-            localStorage.setItem('githubRepo', githubRepo);
-            
-            // Reinicializar sincronização com novas configurações
-            await inicializarSincronizacao();
-            
-            mostrarSucesso('Configurações salvas!');
-        }
-
-        // Sincronização manual
-        async function sincronizarManual() {
-            if (!syncManager) {
-                mostrarErro('Sistema de sincronização não inicializado!');
-                return;
-            }
-            
-            try {
-                await syncManager.carregarDados();
-                atualizarEstatisticas();
-                atualizarListaTransacoes();
-                mostrarNotificacaoSync();
-            } catch (error) {
-                console.error('Erro na sincronização:', error);
-                mostrarErro('Erro na sincronização. Verifique as configurações.');
-            }
-        }
-
-        // Configurar seleção de categorias
-        function configurarCategorias() {
-            const botoesCategorias = document.querySelectorAll('.category-btn');
-            
-            botoesCategorias.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // Remover seleção anterior
-                    botoesCategorias.forEach(b => b.classList.remove('active'));
-                    
-                    // Selecionar atual
-                    this.classList.add('active');
-                    categoriaSeleccionada = this.dataset.category;
-                    document.getElementById('categoria').value = categoriaSeleccionada;
-                    
-                    // Feedback visual
-                    this.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        this.style.transform = '';
-                    }, 150);
-                });
-            });
-        }
-
-        // Processar formulário
-        document.getElementById('gastoForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const descricao = document.getElementById('descricao').value.trim();
+        window.onload = () => {
+            initSMarquesSync();
+        };
+        
+        async function salvarGasto() {
+            const descricao = document.getElementById('descricao').value;
             const valor = parseFloat(document.getElementById('valor').value);
             const categoria = document.getElementById('categoria').value;
-            
-            if (!descricao || !valor || !categoria) {
-                mostrarErro('Por favor, preencha todos os campos!');
-                return;
-            }
-            
-            if (valor <= 0) {
-                mostrarErro('O valor deve ser maior que zero!');
-                return;
-            }
-            
-            // Criar novo gasto
-            const novoGasto = {
-                id: Date.now(),
-                descricao: descricao,
-                valor: valor,
-                categoria: categoria,
-                data: new Date().toISOString().split('T')[0],
-                timestamp: new Date().toISOString(),
-                horario: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'})
-            };
-            
-            // Salvar via sync manager
-            if (syncManager) {
-                const sucesso = await syncManager.adicionarGastoRapido(novoGasto);
+
+            if (descricao && valor && categoria) {
+                const gasto = {
+                    descricao,
+                    valor,
+                    categoria,
+                    data: new Date().toISOString().split('T')[0]
+                };
+                
+                const sucesso = await syncManager.adicionarGastoRapido(gasto);
+                
                 if (sucesso) {
-                    mostrarNotificacaoSync();
+                    alert('Gasto lançado com sucesso!');
+                    document.getElementById('descricao').value = '';
+                    document.getElementById('valor').value = '';
+                } else {
+                    alert('Erro ao sincronizar. Verifique a sua conexão ou token.');
                 }
+            } else {
+                alert('Por favor, preencha todos os campos.');
             }
-            
-            // Atualizar interface
-            atualizarEstatisticas();
-            atualizarListaTransacoes();
-            limparFormulario();
-            mostrarSucesso();
-            
-            // Vibração no celular (se disponível)
-            if (navigator.vibrate) {
-                navigator.vibrate(100);
-            }
-        });
-
-        // Limpar formulário
-        function limparFormulario() {
-            document.getElementById('descricao').value = '';
-            document.getElementById('valor').value = '';
-            document.getElementById('categoria').value = '';
-            categoriaSeleccionada = '';
-            
-            // Remover seleção das categorias
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Focar no primeiro campo
-            setTimeout(() => {
-                document.getElementById('descricao').focus();
-            }, 100);
-        }
-
-        // Atualizar estatísticas
-        function atualizarEstatisticas() {
-            if (!syncManager) return;
-            
-            const dados = syncManager.obterDados();
-            const gastos = dados.gastosRapidos || [];
-            
-            const hoje = new Date().toISOString().split('T')[0];
-            const mesAtual = new Date().getMonth();
-            const anoAtual = new Date().getFullYear();
-            
-            // Gastos de hoje
-            const gastosHoje = gastos.filter(g => g.data === hoje);
-            const totalHoje = gastosHoje.reduce((acc, g) => acc + g.valor, 0);
-            
-            // Gastos do mês
-            const gastosMes = gastos.filter(g => {
-                const dataGasto = new Date(g.data);
-                return dataGasto.getMonth() === mesAtual && dataGasto.getFullYear() === anoAtual;
-            });
-            const totalMes = gastosMes.reduce((acc, g) => acc + g.valor, 0);
-            
-            // Atualizar display
-            document.getElementById('gastosHoje').textContent = formatarMoeda(totalHoje);
-            document.getElementById('gastosMes').textContent = formatarMoeda(totalMes);
-            document.getElementById('totalGastos').textContent = gastos.length;
-        }
-
-        // Atualizar lista de transações
-        function atualizarListaTransacoes() {
-            if (!syncManager) return;
-            
-            const dados = syncManager.obterDados();
-            const gastos = dados.gastosRapidos || [];
-            const lista = document.getElementById('listaTransacoes');
-            
-            if (gastos.length === 0) {
-                lista.innerHTML = `
-                    <div style="text-align: center; color: #95a5a6; padding: 20px;">
-                        Nenhum lançamento ainda.<br>
-                        Faça seu primeiro gasto! 🚀
-                    </div>
-                `;
-                return;
-            }
-            
-            const ultimosGastos = gastos.slice(0, 5);
-            
-            lista.innerHTML = ultimosGastos.map(gasto => {
-                const categoria = obterEmojiCategoria(gasto.categoria);
-                return `
-                    <div class="transaction-item">
-                        <div class="transaction-info">
-                            <div class="transaction-desc">${categoria} ${gasto.descricao}</div>
-                            <div class="transaction-cat">${gasto.categoria} • ${gasto.horario}</div>
-                        </div>
-                        <div>
-                            <div class="transaction-value">${formatarMoeda(gasto.valor)}</div>
-                            <div class="transaction-time">${formatarDataPt(gasto.data)}</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Mostrar mensagem de sucesso
-        function mostrarSucesso(mensagem = 'Gasto lançado com sucesso!') {
-            const msg = document.getElementById('successMessage');
-            msg.textContent = `✅ ${mensagem}`;
-            msg.style.display = 'block';
-            
-            setTimeout(() => {
-                msg.style.display = 'none';
-            }, 2000);
-        }
-
-        // Mostrar erro
-        function mostrarErro(mensagem) {
-            alert('⚠️ ' + mensagem);
-            
-            // Vibração de erro (se disponível)
-            if (navigator.vibrate) {
-                navigator.vibrate([100, 100, 100]);
-            }
-        }
-
-        // Mostrar notificação de sincronização
-        function mostrarNotificacaoSync() {
-            const notif = document.getElementById('syncNotification');
-            notif.classList.add('show');
-            
-            setTimeout(() => {
-                notif.classList.remove('show');
-            }, 3000);
-        }
-
-        // Funções utilitárias
-        function formatarMoeda(valor) {
-            return new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2
-            }).format(valor);
-        }
-
-        function formatarDataPt(data) {
-            const hoje = new Date().toISOString().split('T')[0];
-            const ontem = new Date();
-            ontem.setDate(ontem.getDate() - 1);
-            const ontemStr = ontem.toISOString().split('T')[0];
-            
-            if (data === hoje) return 'Hoje';
-            if (data === ontemStr) return 'Ontem';
-            
-            return new Date(data + 'T00:00:00').toLocaleDateString('pt-BR', {
-                day: '2-digit',
-                month: '2-digit'
-            });
-        }
-
-        function obterEmojiCategoria(categoria) {
-            const emojis = {
-                'alimentacao': '🍽️',
-                'transporte': '🚗',
-                'saude': '🏥',
-                'lazer': '🎮',
-                'casa': '🏠',
-                'outros': '📦'
-            };
-            return emojis[categoria] || '📦';
-        }
-
-        // Prevenir zoom no iOS quando tocar em inputs
-        document.querySelectorAll('input[type="number"]').forEach(input => {
-            input.addEventListener('focus', function() {
-                this.style.fontSize = '16px';
-            });
-        });
-    </script>
-</body>
-</html>
-
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💰 SMarques - Gastos</title>
-    <style>
-        /* (todo o CSS permanece igual ao original) */
-    </style>
-</head>
-<body>
-    <div class="mobile-container">
-        <div class="sync-status" id="syncStatus">🔄 Inicializando...</div>
-        
-        <div class="header">
-            <a href="index.html" class="planilha-link">📊 Planilha</a>
-            <h1>💰 Família SMarques</h1>
-            <p>Lançamento Rápido de Gastos</p>
-        </div>
-
-        <!-- Formulário e transações omitidos -->
-
-        <div class="settings-section">
-            <div class="settings-title">⚙️ Configurações</div>
-            <input type="text" id="githubUser" class="settings-input" placeholder="Usuário GitHub" value="">
-            <input type="text" id="githubRepo" class="settings-input" placeholder="Nome do Repositório" value="smarques-financeiro">
-            <input type="password" id="githubToken" class="settings-input" placeholder="Token GitHub">
-            <button class="settings-btn" onclick="salvarConfiguracoes()">💾 Salvar Configurações</button>
-            <button class="settings-btn" onclick="sincronizarManual()">🔄 Sincronizar Agora</button>
-        </div>
-    </div>
-
-    <!-- Script da Sincronização -->
-    <script src="js/sync.js"></script>
-
-    <script>
-        let syncManager = null;
-
-        async function inicializarSincronizacao() {
-            const githubUser = localStorage.getItem('githubUser') || 'seu-usuario';
-            const githubRepo = localStorage.getItem('githubRepo') || 'smarques-financeiro';
-            const githubToken = localStorage.getItem('githubToken') || null;
-
-            syncManager = initSMarquesSync({
-                owner: githubUser,
-                repo: githubRepo,
-                token: githubToken
-            });
-
-            syncManager.onStatusChange((status, message) => {
-                const statusElement = document.getElementById('syncStatus');
-                statusElement.className = `sync-status ${status}`;
-                statusElement.textContent = getStatusMessage(status);
-            });
-
-            syncManager.iniciarSincronizacaoAutomatica(30000);
-            await syncManager.carregarDados();
-        }
-
-        function carregarConfiguracoes() {
-            document.getElementById('githubUser').value = localStorage.getItem('githubUser') || '';
-            document.getElementById('githubRepo').value = localStorage.getItem('githubRepo') || 'smarques-financeiro';
-            document.getElementById('githubToken').value = localStorage.getItem('githubToken') || '';
-        }
-
-        async function salvarConfiguracoes() {
-            const githubUser = document.getElementById('githubUser').value.trim();
-            const githubRepo = document.getElementById('githubRepo').value.trim();
-            const githubToken = document.getElementById('githubToken').value.trim();
-            if (!githubUser) {
-                alert('Por favor, informe o usuário do GitHub!');
-                return;
-            }
-            localStorage.setItem('githubUser', githubUser);
-            localStorage.setItem('githubRepo', githubRepo);
-            localStorage.setItem('githubToken', githubToken);
-            await inicializarSincronizacao();
-            alert('✅ Configurações salvas!');
         }
     </script>
 </body>
