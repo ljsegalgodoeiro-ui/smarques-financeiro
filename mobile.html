@@ -877,3 +877,86 @@
     </script>
 </body>
 </html>
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 SMarques - Gastos</title>
+    <style>
+        /* (todo o CSS permanece igual ao original) */
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <div class="sync-status" id="syncStatus">🔄 Inicializando...</div>
+        
+        <div class="header">
+            <a href="index.html" class="planilha-link">📊 Planilha</a>
+            <h1>💰 Família SMarques</h1>
+            <p>Lançamento Rápido de Gastos</p>
+        </div>
+
+        <!-- Formulário e transações omitidos -->
+
+        <div class="settings-section">
+            <div class="settings-title">⚙️ Configurações</div>
+            <input type="text" id="githubUser" class="settings-input" placeholder="Usuário GitHub" value="">
+            <input type="text" id="githubRepo" class="settings-input" placeholder="Nome do Repositório" value="smarques-financeiro">
+            <input type="password" id="githubToken" class="settings-input" placeholder="Token GitHub">
+            <button class="settings-btn" onclick="salvarConfiguracoes()">💾 Salvar Configurações</button>
+            <button class="settings-btn" onclick="sincronizarManual()">🔄 Sincronizar Agora</button>
+        </div>
+    </div>
+
+    <!-- Script da Sincronização -->
+    <script src="js/sync.js"></script>
+
+    <script>
+        let syncManager = null;
+
+        async function inicializarSincronizacao() {
+            const githubUser = localStorage.getItem('githubUser') || 'seu-usuario';
+            const githubRepo = localStorage.getItem('githubRepo') || 'smarques-financeiro';
+            const githubToken = localStorage.getItem('githubToken') || null;
+
+            syncManager = initSMarquesSync({
+                owner: githubUser,
+                repo: githubRepo,
+                token: githubToken
+            });
+
+            syncManager.onStatusChange((status, message) => {
+                const statusElement = document.getElementById('syncStatus');
+                statusElement.className = `sync-status ${status}`;
+                statusElement.textContent = getStatusMessage(status);
+            });
+
+            syncManager.iniciarSincronizacaoAutomatica(30000);
+            await syncManager.carregarDados();
+        }
+
+        function carregarConfiguracoes() {
+            document.getElementById('githubUser').value = localStorage.getItem('githubUser') || '';
+            document.getElementById('githubRepo').value = localStorage.getItem('githubRepo') || 'smarques-financeiro';
+            document.getElementById('githubToken').value = localStorage.getItem('githubToken') || '';
+        }
+
+        async function salvarConfiguracoes() {
+            const githubUser = document.getElementById('githubUser').value.trim();
+            const githubRepo = document.getElementById('githubRepo').value.trim();
+            const githubToken = document.getElementById('githubToken').value.trim();
+            if (!githubUser) {
+                alert('Por favor, informe o usuário do GitHub!');
+                return;
+            }
+            localStorage.setItem('githubUser', githubUser);
+            localStorage.setItem('githubRepo', githubRepo);
+            localStorage.setItem('githubToken', githubToken);
+            await inicializarSincronizacao();
+            alert('✅ Configurações salvas!');
+        }
+    </script>
+</body>
+</html>
