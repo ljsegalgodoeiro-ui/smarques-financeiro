@@ -2,10 +2,10 @@
 class SMarquesSync {
     constructor(config) {
         this.config = {
-            owner: config.owner || 'seu-usuario',
+            owner: config.owner || 'seu-usuario', // ALTERE AQUI!
             repo: config.repo || 'smarques-financeiro',
             branch: config.branch || 'main',
-            token: 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)
+            token: config.token || null, // Token para escrita (opcional)
             dataFile: 'data/gastos.json'
         };
         
@@ -241,7 +241,7 @@ class SMarquesSync {
     }
 
     // Obter dados atuais
-    obterDados() {
+    obtenerDados() {
         return this.cache;
     }
 
@@ -325,7 +325,7 @@ window.syncManager = null;
 // Função para inicializar o sync
 window.initSMarquesSync = function(config = {}) {
     const defaultConfig = {
-        owner: 'seu-usuario', // ljsegalgodoeiro-ui
+        owner: 'seu-usuario', // ALTERE AQUI
         repo: 'smarques-financeiro',
         branch: 'main'
     };
